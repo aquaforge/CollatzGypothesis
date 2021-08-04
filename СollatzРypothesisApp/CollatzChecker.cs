@@ -8,10 +8,11 @@ namespace СollatzРypothesisApp
     class CollatzChecker
     {
         const int MAX_CHECK_STREAK = 5_000_000;
+
         ulong maxCheckedNumber = 1;
-        SortedSet<ulong> checkedNumbers = new SortedSet<ulong>();
         public ulong MaxCheckedNumber { get { return maxCheckedNumber; } }
 
+        SortedSet<ulong> checkedNumbers = new SortedSet<ulong>();
         public ulong[] CheckedNumbers { get { return checkedNumbers.ToArray(); } }
 
 
@@ -30,9 +31,11 @@ namespace СollatzРypothesisApp
             checkedNumbers.RemoveWhere(i => i <= maxCheckedNumber);
         }
 
-        public void CheckNumber(ulong num)
+        public void CheckNumber(ulong init_number)
         {
+            ulong num = init_number;
             int counter = 0;
+
             var nums = new SortedSet<ulong>();
             while (counter < MAX_CHECK_STREAK)
             {
@@ -52,7 +55,7 @@ namespace СollatzРypothesisApp
                 }
                 counter++;
             }
-            throw new ArgumentException("Not a 1");
+            throw new ArgumentException($"value [{init_number}] does not fit");
         }
     }
 }
