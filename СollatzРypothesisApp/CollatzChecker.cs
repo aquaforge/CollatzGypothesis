@@ -20,7 +20,8 @@ namespace СollatzРypothesisApp
 
         public static CollatzChecker GetInstanse()
         {
-            return _instanse ?? new CollatzChecker();
+            if (_instanse == null) _instanse = new CollatzChecker();
+            return _instanse;
         }
 
 
