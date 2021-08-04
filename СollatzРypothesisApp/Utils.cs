@@ -17,7 +17,7 @@ namespace СollatzРypothesisApp
             }
             catch (ConfigurationErrorsException)
             {
-                Console.WriteLine("Error writing app settings");
+                Console.WriteLine("Error reading app settings");
                 //todo
             }
             return result;

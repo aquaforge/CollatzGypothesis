@@ -24,10 +24,8 @@ namespace СollatzРypothesisApp
             return _instanse;
         }
 
-
-
         private CollatzChecker() { ConfigRead(); }
-        ~CollatzChecker() { ConfigWrite(); }
+        ~CollatzChecker() { ConfigSave(); }
 
         private void ConfigRead()
         {
@@ -37,7 +35,7 @@ namespace СollatzРypothesisApp
             maxCheckedNumber = res;
         }
 
-        private void ConfigWrite()
+        private void ConfigSave()
         {
             Utils.SettingKeyReWrite("maxCheckedNumber", maxCheckedNumber.ToString());
         }
@@ -55,7 +53,7 @@ namespace СollatzРypothesisApp
         public void DoEndEpoch()
         {
             SetMaxCheckedNumber();
-            ConfigWrite();
+            ConfigSave();
         }
 
 
@@ -64,23 +62,19 @@ namespace СollatzРypothesisApp
             ulong num = init_number;
             int counter = 0;
 
-            var nums = new SortedSet<ulong>();
             while (counter < MAX_CHECK_STREAK)
             {
-                if (checkedNumbers.Contains(num) || num <= maxCheckedNumber)
+                if (num <= maxCheckedNumber)
                 {
-                    if (nums.Count > 0)
-                        checkedNumbers.UnionWith(nums);
+                    if (!checkedNumbers.Contains(init_number))
+                        checkedNumbers.Add(init_number);
                     return;
                 }
-                nums.Add(num);
-                checked
-                {
-                    if (num % 2 == 0)
-                        num /= 2;
-                    else
-                        num = 3 * num + 1;
-                }
+
+                if (num % 2 == 0)
+                    num /= 2;
+                else
+                    checked { num = 3 * num + 1; };
                 counter++;
             }
             throw new ArgumentException($"value [{init_number}] does not fit Сollatz Рypothesis");
