@@ -7,22 +7,42 @@ namespace СollatzРypothesisApp
 {
     class CollatzChecker
     {
+        private static CollatzChecker _instanse;
+
         const int MAX_CHECK_STREAK = 5_000_000;
 
-        ulong maxCheckedNumber = 1;
+        ulong maxCheckedNumber = 2;
         public ulong MaxCheckedNumber { get { return maxCheckedNumber; } }
 
         SortedSet<ulong> checkedNumbers = new SortedSet<ulong>();
         public ulong[] CheckedNumbers { get { return checkedNumbers.ToArray(); } }
 
 
-
-        public CollatzChecker()
+        public static CollatzChecker GetInstanse()
         {
-            checkedNumbers.Add(1);
+            return _instanse ?? new CollatzChecker();
         }
 
-        public void SetMaxCheckedNumber()
+
+
+        private CollatzChecker() { ConfigRead(); }
+        ~CollatzChecker() { ConfigWrite(); }
+
+        private void ConfigRead()
+        {
+            string str = Utils.SettingKeyRead("maxCheckedNumber");
+            if (!ulong.TryParse(str, out ulong res))
+                res = 2;
+            maxCheckedNumber = res;
+        }
+
+        private void ConfigWrite()
+        {
+            Utils.SettingKeyReWrite("maxCheckedNumber", maxCheckedNumber.ToString());
+        }
+
+
+        private void SetMaxCheckedNumber()
         {
             ulong counter = maxCheckedNumber + 1;
             while (checkedNumbers.Contains(counter))
@@ -30,6 +50,13 @@ namespace СollatzРypothesisApp
             maxCheckedNumber = counter - 1;
             checkedNumbers.RemoveWhere(i => i <= maxCheckedNumber);
         }
+
+        public void DoEndEpoch()
+        {
+            SetMaxCheckedNumber();
+            ConfigWrite();
+        }
+
 
         public void CheckNumber(ulong init_number)
         {
@@ -55,7 +82,7 @@ namespace СollatzРypothesisApp
                 }
                 counter++;
             }
-            throw new ArgumentException($"value [{init_number}] does not fit");
+            throw new ArgumentException($"value [{init_number}] does not fit Сollatz Рypothesis");
         }
     }
 }
