@@ -11,7 +11,7 @@ namespace СollatzРypothesisApp
             LogInfo("Start");
 
             var cc = new CollatzChecker();
-            for (int epoch = 0; epoch < 50; epoch++)
+            for (int epoch = 0; epoch < 100; epoch++)
             {
                 LogInfo($"epoch={epoch}");
                 cc.RunParallel();
