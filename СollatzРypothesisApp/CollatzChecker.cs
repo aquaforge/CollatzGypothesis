@@ -2,82 +2,67 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace СollatzРypothesisApp
 {
     class CollatzChecker
     {
-        private static CollatzChecker _instanse;
 
-        const int MAX_CHECK_STREAK = 5_000_000;
+        public static readonly int MAX_CHECK_WRONG_STREAK = 5_000_000;
+        public static readonly int CHECK_STREAK = 5_000_000;
 
-        ulong maxCheckedNumber = 2;
-        public ulong MaxCheckedNumber { get { return maxCheckedNumber; } }
+        static ulong maxCheckedNumber = 2;
+        public static ulong MaxCheckedNumber { get => maxCheckedNumber; }
 
-        SortedSet<ulong> checkedNumbers = new SortedSet<ulong>();
-        public ulong[] CheckedNumbers { get { return checkedNumbers.ToArray(); } }
+        private static void ConfigSave() => Utils.SettingKeyReWrite("maxCheckedNumber", maxCheckedNumber.ToString());
 
-
-        public static CollatzChecker GetInstanse()
-        {
-            if (_instanse == null) _instanse = new CollatzChecker();
-            return _instanse;
-        }
-
-        private CollatzChecker() { ConfigRead(); }
-        ~CollatzChecker() { ConfigSave(); }
-
-        private void ConfigRead()
+        private static void ConfigRead()
         {
             string str = Utils.SettingKeyRead("maxCheckedNumber");
-            if (!ulong.TryParse(str, out ulong res))
-                res = 2;
+            if (!ulong.TryParse(str, out ulong res)) res = 2;
             maxCheckedNumber = res;
         }
 
-        private void ConfigSave()
-        {
-            Utils.SettingKeyReWrite("maxCheckedNumber", maxCheckedNumber.ToString());
-        }
+        //        public CollatzChecker() { }
+        static CollatzChecker() => ConfigRead();
+        ~CollatzChecker() => ConfigSave();
 
-
-        private void SetMaxCheckedNumber()
+        public void RunParallel()
         {
-            ulong counter = maxCheckedNumber + 1;
-            while (checkedNumbers.Contains(counter))
-                counter++;
-            maxCheckedNumber = counter - 1;
-            checkedNumbers.RemoveWhere(i => i <= maxCheckedNumber);
-        }
+            var nums = new ulong[10];
+            for (int i = 0; i < nums.Length; i++)
+                nums[i] = maxCheckedNumber + (ulong)(CHECK_STREAK * i + 1);
 
-        public void DoEndEpoch()
-        {
-            SetMaxCheckedNumber();
+            Parallel.ForEach(nums, DoWork);
+            maxCheckedNumber += (ulong)(CHECK_STREAK * 10 - 1);
+
+            //DoWork(maxCheckedNumber + 1);
             ConfigSave();
         }
 
-
-        public void CheckNumber(ulong init_number)
+        public void DoWork(ulong startNumber)
         {
-            ulong num = init_number;
+            for (ulong counter = startNumber; counter < startNumber + (ulong)(CHECK_STREAK - 1); counter++)
+                CheckNumber(counter);
+        }
+
+
+        private void CheckNumber(ulong checkingNum)
+        {
             int counter = 0;
+            ulong num = checkingNum;
 
-            while (counter < MAX_CHECK_STREAK)
+            while (counter < MAX_CHECK_WRONG_STREAK)
             {
-                if (num <= maxCheckedNumber)
-                {
-                    if (!checkedNumbers.Contains(init_number))
-                        checkedNumbers.Add(init_number);
-                    return;
-                }
-
+                if (num <= maxCheckedNumber) return;
                 if (num % 2 == 0)
                     num /= 2;
                 else
                     checked { num = 3 * num + 1; };
                 counter++;
             }
-            throw new ArgumentException($"value [{init_number}] does not fit Сollatz Рypothesis");
+            throw new ArgumentException($"value [{checkingNum}] does not fit Сollatz Рypothesis");
         }
     }
 }
