@@ -31,21 +31,20 @@ namespace СollatzРypothesisApp
 
         public void RunParallel()
         {
-            var nums = new BigInteger[10];
-            for (int i = 0; i < nums.Length; i++)
-                nums[i] = maxCheckedNumber + (BigInteger)(CHECK_STREAK * i + 1);
+            int numParallel = Environment.ProcessorCount;
+            if (numParallel < 1) numParallel = 1;
 
-            Parallel.ForEach(nums, DoWork);
-            maxCheckedNumber += (BigInteger)(CHECK_STREAK * 10 - 1);
-
-            //DoWork(maxCheckedNumber + 1);
+            Parallel.ForEach(Enumerable.Range(0, numParallel), DoWork);
+            maxCheckedNumber += (BigInteger)(CHECK_STREAK * numParallel - 1);
             ConfigSave();
+            Console.WriteLine();
         }
 
-        public void DoWork(BigInteger startNumber)
+        public void DoWork(int rangeNum)
         {
-            for (BigInteger counter = startNumber; counter < startNumber + (BigInteger)(CHECK_STREAK - 1); counter++)
-                CheckNumber(counter);
+            for (BigInteger counter = (BigInteger)(CHECK_STREAK * rangeNum); counter < (BigInteger)(CHECK_STREAK * (rangeNum + 1) - 1); counter++)
+                CheckNumber(maxCheckedNumber + counter);
+            Console.Write($"{rangeNum};");
         }
 
 
@@ -53,7 +52,7 @@ namespace СollatzРypothesisApp
         {
             int counter = 0;
             BigInteger num = checkingNum;
-            
+
             BigInteger BigInteger1 = (BigInteger)1;
             BigInteger BigInteger2 = (BigInteger)2;
             BigInteger BigInteger3 = (BigInteger)3;
