@@ -11,7 +11,7 @@ namespace СollatzРypothesisApp
     {
 
         public static readonly int MAX_CHECK_WRONG_STREAK = 5_000_000;
-        public static readonly int CHECK_STREAK = 5_000_000;
+        public static readonly int CHECK_STREAK = 2_000_000;
 
         static BigInteger maxCheckedNumber = 2;
         public static BigInteger MaxCheckedNumber { get => maxCheckedNumber; }
@@ -42,9 +42,12 @@ namespace СollatzРypothesisApp
 
         public void DoWork(int rangeNum)
         {
-            for (BigInteger counter = (BigInteger)(CHECK_STREAK * rangeNum); counter < (BigInteger)(CHECK_STREAK * (rangeNum + 1) - 1); counter++)
-                CheckNumber(maxCheckedNumber + counter);
-            Console.Write($"{rangeNum};");
+            var numFrom = maxCheckedNumber + (BigInteger)(CHECK_STREAK * rangeNum);
+            var numTo = maxCheckedNumber + (BigInteger)(CHECK_STREAK * (rangeNum + 1) - 1);
+            for (BigInteger counter = numFrom; counter < numTo; counter++)
+                CheckNumber(counter);
+
+            Console.Write($"{rangeNum} ");
         }
 
 
