@@ -29,10 +29,12 @@ namespace СollatzРypothesisApp
         public void RunParallel()
         {
             int numParallel = Environment.ProcessorCount;
-            if (numParallel < 1) numParallel = 1;
+            if (numParallel <= 2) numParallel = 1;
 
-            Parallel.ForEach(Enumerable.Range(0, numParallel), DoWork);
+            ParallelLoopResult parallelResult = Parallel.ForEach(Enumerable.Range(0, numParallel), DoWork);
             maxCheckedNumber += (BigInteger)(CHECK_STREAK * numParallel - 1);
+            Task.FromResult(parallelResult).Wait();
+
             ConfigSave();
             Console.WriteLine();
         }
